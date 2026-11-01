@@ -1,0 +1,22 @@
+# Frontend stack: the Next.js web app.
+# Needs the backend stack running first (it creates the shared "acm-network").
+# Start: docker compose up -d --build
+name: acm-frontend
+
+services:
+  web:
+    build: .
+    image: acm-web:local
+    restart: unless-stopped
+    environment:
+      # Inside Docker the API is reached by its service name on the shared network.
+      API_URL: http://api:5001
+      # From .env: "true" for local Docker over plain HTTP.
+      INSECURE_COOKIES: ${INSECURE_COOKIES:-true}
+    ports:
+      - "${WEB_PORT:-5000}:5000"
+
+networks:
+  default:
+    name: acm-network
+    external: true
